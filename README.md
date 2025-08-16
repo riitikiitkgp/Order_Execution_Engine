@@ -34,6 +34,52 @@ A lightweight order execution engine that simulates token swaps across two Solan
 # Start Redis (required for job queue / pub-sub)
 redis-server &
 
+# (Optional) Make SQLite DB accessible — create file & run migrations
+touch engine.db
+# Or change DB path in db.py to a full path if using external DB
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the FastAPI backend
+python app.py
+```
+
+Static files (like `index.html`) reside under the `static/` directory — the UI can be accessed by navigating to `http://localhost:8000` after starting the server.
+
+### 📊 Accessing the Database
+
+By default, the engine uses `SQLite` and stores data in `engine.db`. You can inspect/debug the database at any time using any SQLite client:
+
+```bash
+sqlite3 engine.db
+sqlite> .tables   # view tables
+sqlite> SELECT * FROM orders;  # inspect data
+```
+
+To connect from GUI clients (e.g. **DB Browser for SQLite**, **TablePlus**), simply point them to the `engine.db` file in the root directory. If using a remote path or Docker, ensure the file is mounted or the path in `db.py` is updated accordingly.
+
+```bash
+# Start Redis (required for job queue / pub-sub)
+redis-server &
+
+# (Optional) Make SQLite DB accessible — create file & run migrations
+touch engine.db
+# Or change DB path in db.py to a full path if using external DB
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the FastAPI backend
+python app.py
+```
+
+Static files (like `index.html`) reside under the `static/` directory — the UI can be accessed by navigating to `http://localhost:8000` after starting the server. Ensure the database file path in `db.py` is reachable (e.g. use an absolute path if running inside Docker or different directory).
+
+```bash
+# Start Redis (required for job queue / pub-sub)
+redis-server &
+
 # Install dependencies
 pip install -r requirements.txt
 
@@ -83,7 +129,16 @@ Market orders guarantee **speed of execution**, which is crucial in volatile cry
 ├── models.py            # DB + order models
 ├── utils.py             # helper functions
 ├── db.py                # DB connection
-├── static/index.html           # frontend (local test)
+├── index.html           # frontend (local test)
 └── requirements.txt
 ```
 
+## 🧑‍💻 Contributing
+
+1. Fork
+2. Add features in new branch
+3. Raise PR 🔁
+
+## 📬 License
+
+MIT — use freely. Open to collaborations!
