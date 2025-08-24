@@ -38,13 +38,3 @@ logs_table = sa.Table(
 
 metadata.create_all(engine)
 Session = sessionmaker(bind=engine, expire_on_commit=False)
-
-def log_order_message(order_id: str, level: str, message: str):
-    s = Session()
-    try:
-        s.execute(
-            logs_table.insert().values(order_id=order_id, level=level, message=message, ts=time.time())
-        )
-        s.commit()
-    finally:
-        s.close()
