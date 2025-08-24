@@ -3,6 +3,7 @@ import random
 from dataclasses import dataclass
 import json
 from utils import set_active_order_state, log_order_message, update_order_in_db, WS_CONNECTIONS
+from models import MockDexRouter, Order
 
 # -----------------------
 # Concurrency
@@ -14,47 +15,8 @@ semaphore = asyncio.Semaphore(CONCURRENCY)
 # -----------------------
 # Mock DEX Router
 # -----------------------
-class MockDexRouter:
-    def __init__(self, base_price=1.0):
-        self.base_price = base_price
-
-    async def get_raydium_quote(self, token_in, token_out, amount):
-        await asyncio.sleep(0.2 + random.random() * 0.2)
-        price = self.base_price * (0.98 + random.random() * 0.04)
-        fee = 0.003
-        return {"dex": "Raydium", "price": price, "fee": fee}
-
-    async def get_meteora_quote(self, token_in, token_out, amount):
-        await asyncio.sleep(0.2 + random.random() * 0.25)
-        price = self.base_price * (0.97 + random.random() * 0.05)
-        fee = 0.002
-        return {"dex": "Meteora", "price": price, "fee": fee}
-
-    async def execute_swap(self, dex, order):
-        await asyncio.sleep(2.0 + random.random() * 1.0)
-        if random.random() < 0.08:
-            raise Exception(f"Simulated {dex} execution error")
-        tx_hash = "0x" + "".join(random.choice("0123456789abcdef") for _ in range(64))
-        executed_price = self.base_price * (0.98 + random.random() * 0.05)
-        return {"txHash": tx_hash, "executedPrice": executed_price}
 
 dex_router = MockDexRouter()
-
-# -----------------------
-# Order dataclass
-# -----------------------
-@dataclass
-class Order:
-    id: str
-    token_in: str
-    token_out: str
-    amount: float
-    order_type: str = "market"
-    status: str = "pending"
-    tx_hash: str = None
-    executed_price: float = None
-    last_error: str = None
-    side: str = "buy"
 
 # -----------------------
 # Worker loop
