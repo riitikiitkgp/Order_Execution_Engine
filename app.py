@@ -13,6 +13,7 @@ from sqlalchemy.orm import sessionmaker
 
 from utils import WS_CONNECTIONS, set_active_order_state, persist_order_to_db, update_order_in_db, log_order_message
 from workers import Order, ORDER_QUEUE, process_order_worker, CONCURRENCY
+from models import ExecuteOrderRequest
 
 # -----------------------
 # Config
@@ -83,12 +84,7 @@ async def startup():
 # -----------------------
 # API Endpoints
 # -----------------------
-from pydantic import BaseModel
-class ExecuteOrderRequest(BaseModel):
-    token_in: str
-    token_out: str
-    amount: float
-    order_type: str = "market"
+
 
 @app.post("/api/orders/execute")
 async def submit_order(req: ExecuteOrderRequest):
